@@ -1,0 +1,13 @@
+version: '2'
+volumes:
+    resin-data:
+services:
+  co-processor:
+    build: ./co-processor
+    volumes:
+      - 'resin-data:/data'
+    privileged: true
+    restart: always
+    network_mode: host
+    labels:
+      io.balena.features.supervisor-api: '1'
