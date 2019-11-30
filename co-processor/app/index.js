@@ -44,7 +44,13 @@ app.use(errorHandler);
 app.post('/v1/flash/:fw', (req, res) => {
   if (!req.params.fw) {
     return res.status(400).send('Bad Request');
-  }
+  }  
+  fs.access(req.params.fw, fs.F_OK, (err) => {
+    if (err) {
+      console.error(err)
+      return res.status(500).send(err);
+    }
+  })
   mux.writeSync(1);
   let flash = spawn("/usr/src/app/flash.sh", [req.params.fw, BALENA_FIN_REVISION]);
   flash.stdout.on('data', (data) => {
