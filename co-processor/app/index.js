@@ -1,6 +1,5 @@
 #!/bin/env node
 
-const firmata = require(__dirname + '/utils/firmata.js');
 const supervisor = require(__dirname + '/utils/supervisor.js');
 const gi = require('node-gtk');
 Fin = gi.require('Fin', '0.1');
@@ -22,32 +21,6 @@ const debug = require('debug')('http');
 const bodyParser = require("body-parser");
 const app = express();
 let errorCheck = 0;
-
-let shutdown = function(delay,timeout) {
-  return new Promise((resolve, reject) => {
-    supervisor.checkForOngoingUpdate().then((response) => {
-      firmata.sleep(parseInt(delay), parseInt(timeout));
-      supervisor.shutdown().then(() => {
-        resolve();
-      }).catch((err) => {
-        reject(err);
-      });
-    }).catch((response) => {
-      reject("Device is not Idle, likely updating, will not shutdown");
-    });
-  });
-};
-
-let setPin = function(pin,state) {
-  return new Promise((resolve, reject) => {
-    supervisor.checkForOngoingUpdate().then((response) => {
-      firmata.setPin(parseInt(pin), parseInt(state));
-      resolve();
-    }).catch((response) => {
-      reject("coprocessor is not responding...");
-    });
-  });
-};
 
 errorHandler = (err, req, res, next) => {
   res.status(500);
@@ -104,33 +77,6 @@ app.post('/v1/flash/:fw', (req, res) => {
       console.log('flash failed! device will not reboot.');
       errorCheck = 0;
     }
-  });
-});
-
-app.post('/v1/setpin/:pin/:state', (req, res) => {
-  if (!req.params.pin || !req.params.state) {
-    return res.status(400).send('Bad Request');
-  }
-  console.log('set ' + req.params.pin + ' to state ' + req.params.state);
-  setPin(req.params.pin, req.params.state).then(()=> {
-    res.status(200).send('OK');
-  }).catch((error) => {
-    console.error("device is not responding, check coprocessor firmware/any updates in progress.");  });
-});
-
-app.post('/v1/sleep/:delay/:timeout', (req, res) => {
-  if (!req.params.delay || !req.params.timeout) {
-    return res.status(400).send('Bad Request');
-  }
-  if (parseInt(BALENA_FIN_REVISION) < 10) {
-    return res.status(405).send('Feature not available on current hardware revision');
-  }
-  shutdown(req.params.delay,req.params.timeout).then(()=> {
-    console.error("Sleep command registered, shutting down...");
-    res.status(200).send('OK');
-  }).catch((error) => {
-    console.error("Device is not Idle, likely updating, will retry shutdown in 60 seconds");
-    setTimeout(shutdown, 60000);
   });
 });
 
