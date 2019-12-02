@@ -1,4 +1,4 @@
-# balena-fin-flash
+# balena-fin-flash-coprocessor
 
 This is a balena application template that has a service that allows for flashing of the balenaFin co-processor with a compiled application. For more information on how to compile your own co-processor applications, see [coprocessor-base](https://github.com/balena-io-playground/balena-fin-coprocessor-base/). This application will detect which version of Fin you are using and correctly handle the flashing procedure. We include the settings required for use under Raspbian here too (please use our [balenaFin compiled version of Raspbian](https://github.com/balena-os/pi-gen/releases/latest) as it includes necessary drivers and overlays).
 
