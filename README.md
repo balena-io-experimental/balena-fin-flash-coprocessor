@@ -51,7 +51,7 @@ If you attempt to later use the UART1 mapping to communicate to the co-processor
 
 ### balenaFin multiplexer
 
-In order to maintain as many available compute module GPIO as possible, we use a high speed multiplexer to share the pins used for SWD (for flashing/debugging) with a serial UART (for communication). This is performed via an I2C IO expander that we handily include the drivers for in both our balenaOS and Raspbian distributions. 
+In order to maintain as many available compute module GPIO as possible, we use a high speed multiplexer to share the pins used for SWD (for flashing/debugging) with a serial UART (for communication).
 
 The mux select pin is mapped to `GPIO 41` where `1` selects the coprocessor's SWD pin and `0` selects UART pins.
 
